@@ -1,0 +1,636 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "DORG API for Catcher V2",
+    "description" : "DORG API for Catcher V2",
+    "version" : "1.0.4"
+  },
+  "servers" : [ {
+    "url" : "https://virtserver.swaggerhub.com/m931/DORG/1.0.0"
+  } ],
+  "paths" : {
+    "/api/v1/companies/email-domain/{emailDomain}" : {
+      "get" : {
+        "tags" : [ "developers" ],
+        "description" : "Search company information by domain\n\n**Original service:**\ncatcherEmailService.retrieveCompanyByEmailDomain(senderDomain)\n\n  FROM company WHERE email_domain = #{emailDomain} AND state = 4",
+        "operationId" : "findCompanyByEmailDomain",
+        "parameters" : [ {
+          "name" : "emailDomain",
+          "in" : "path",
+          "description" : "The domain of a company",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Company found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Company"
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "No data, company not found"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/valid-domain/{domain}" : {
+      "get" : {
+        "tags" : [ "developers" ],
+        "description" : "Check the given domain is valid or not\n\n**Original service:** catcherEmailService.selectCountCustomerWithValidDomainsContainsDomain(senderDomain) > 0\n\nFROM dorg.customer\nCheck existence of a domain in customer.valid_domains column      ",
+        "operationId" : "checkValidDomain",
+        "parameters" : [ {
+          "name" : "domain",
+          "in" : "path",
+          "description" : "The domain of sender's company",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Is from a valid domain or not",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Valid"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/users/dorg1/{id}" : {
+      "get" : {
+        "tags" : [ "developers" ],
+        "description" : "Find user by dorg1 user id\n\n**Original service**:\n\nFROM dorg.user u WHERE dorg1_id = #{id,jdbcType=INTEGER}\n",
+        "operationId" : "findUserByUserDorg1Id",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "A parsed id from plant email. Example - plant email is johnrsmith13524@dioicia.com -> the id is 13524",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "User found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "No data, user not found"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}" : {
+      "get" : {
+        "tags" : [ "developers" ],
+        "description" : "Find user by id\n\n**Original service:** \n\nFROM dorg.user u WHERE id = #{id}                                                ",
+        "operationId" : "findUserById",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "User id",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "User found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "No data, user not found"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/download-jobs/plant-email/{plantEmail}" : {
+      "get" : {
+        "tags" : [ "developers" ],
+        "description" : "Find Download job by plant email\n\n**Original service:** \n\nFROM dorg.download_job\n\nWHERE plant_email_sm = #{plantEmail,jdbcType=VARCHAR}\n\nOR plant_email_med = #{plantEmail,jdbcType=VARCHAR}\n\nOR plant_email_lg = #{plantEmail,jdbcType=VARCHAR}\n\nORDER by download_time desc\n\nLIMIT 1 \n           ",
+        "operationId" : "findDownloadJobByPlantEmail",
+        "parameters" : [ {
+          "name" : "plantEmail",
+          "in" : "path",
+          "description" : "plant email",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Download Jobs data found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DownloadJobDetail"
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "Download Jobs data not found"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/usage-tracks/user-id/batch" : {
+      "post" : {
+        "tags" : [ "developers" ],
+        "description" : "Search usage tracks by user ids",
+        "operationId" : "findUsageTrackByUserIds",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Limit on the number of records to return. If the set of matched results is larger than limit, cap the returned results at size limit. (default - 100)",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "default" : 100
+          }
+        }, {
+          "name" : "start",
+          "in" : "query",
+          "description" : "From the set of matched results, return record numbers start through (start + count) (default - 0)",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "0"
+          }
+        }, {
+          "name" : "orderBy",
+          "in" : "query",
+          "description" : "Name of property on which to base the order of returned entities.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "platformUser", "userId", "eventDate", "updateTime", "clientId", "companyName", "action", "entityType" ]
+          }
+        }, {
+          "name" : "sort",
+          "in" : "query",
+          "description" : "Sort order",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "asc", "desc" ]
+          }
+        }, {
+          "name" : "filterBy",
+          "in" : "query",
+          "description" : "Name of property on which to filter",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "platformUser", "userId", "eventDate", "updateTime", "clientId", "companyName", "action", "entityType" ]
+          }
+        }, {
+          "name" : "filterValue",
+          "in" : "query",
+          "description" : "The corresponding value to filter",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "User ids",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UsageTrackRequest"
+              },
+              "example" : {
+                "userId" : [ 33231, 108625 ],
+                "filter" : [ {
+                  "filterName" : "platformUser",
+                  "filterValue" : "huston",
+                  "operator" : "like"
+                }, {
+                  "filterName" : "eventDate",
+                  "filterValue" : "2017-07-21",
+                  "operator" : "equal"
+                } ]
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Usage tracks data found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsageTrackResponse"
+                },
+                "example" : {
+                  "total" : 1888,
+                  "data" : [ {
+                    "id" : 1,
+                    "platformUser" : "jennifer.huston@experis.com",
+                    "userId" : 33231,
+                    "eventDate" : "2017-07-21",
+                    "updateTime" : "2017-07-21T17:32:28Z",
+                    "clientId" : "172.20.19.178",
+                    "companyName" : "Experis",
+                    "action" : "Export Actions",
+                    "entityType" : "Intel Report",
+                    "detailsJson" : "{\"entityType\": \"Intel\", \"entityIds\": [1318, 7880, 3268, 1870, 1263, 5424, 550, 11645, 30443, 3443, 10474]}",
+                    "eventCount" : 87
+                  }, {
+                    "id" : 2,
+                    "platformUser" : "jplanner@advantage-tech.com",
+                    "userId" : 108625,
+                    "eventDate" : "2017-07-21",
+                    "updateTime" : "2017-07-21T17:32:28Z",
+                    "clientId" : "50.232.118.139",
+                    "companyName" : "Advantage Technical Systems",
+                    "action" : "Export Actions",
+                    "entityType" : "Company",
+                    "detailsJson" : "{\"entityType\": \"Company\", \"entityIds\": [1318, 7880, 3268, 1870, 1263, 5424, 550, 11645, 30443, 3443, 10474]}",
+                    "eventCount" : 13
+                  } ]
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "Usage track data not found"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Company" : {
+        "required" : [ "id", "name" ],
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 4632
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "1800flowers"
+          },
+          "webDomain" : {
+            "type" : "string",
+            "example" : "www.1800flowers.com"
+          }
+        }
+      },
+      "Valid" : {
+        "required" : [ "valid" ],
+        "properties" : {
+          "valid" : {
+            "type" : "boolean",
+            "example" : true
+          }
+        }
+      },
+      "User" : {
+        "required" : [ "customerId", "id", "userName" ],
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 13245
+          },
+          "customerId" : {
+            "type" : "integer",
+            "example" : 4632
+          },
+          "userName" : {
+            "type" : "string",
+            "example" : "user1@gmail.com"
+          },
+          "firstName" : {
+            "type" : "string",
+            "example" : "John"
+          },
+          "lastName" : {
+            "type" : "string",
+            "example" : "Wick"
+          }
+        }
+      },
+      "Customer" : {
+        "required" : [ "activeTo", "id", "name" ],
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 4632
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "arista"
+          },
+          "validDomains" : {
+            "type" : "string",
+            "example" : "aristanetworks.com arista.com"
+          },
+          "activeTo" : {
+            "type" : "string",
+            "example" : "2017-07-21T17:32:28Z"
+          }
+        }
+      },
+      "UserDetail" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/User"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "email" : {
+              "type" : "string",
+              "example" : "user1@gmail.com"
+            },
+            "status" : {
+              "type" : "string",
+              "example" : "active"
+            },
+            "activeFrom" : {
+              "type" : "string",
+              "example" : "2017-07-21T17:32:28Z"
+            },
+            "activeTo" : {
+              "type" : "string",
+              "example" : "2017-07-21T17:32:28Z"
+            },
+            "exportLimit" : {
+              "type" : "integer",
+              "example" : 1000
+            }
+          }
+        } ]
+      },
+      "CustomerDetail" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Customer"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "status" : {
+              "type" : "string",
+              "example" : "active"
+            },
+            "activeFrom" : {
+              "type" : "string",
+              "example" : "2017-07-21T17:32:28Z"
+            },
+            "maxSeats" : {
+              "type" : "integer",
+              "example" : 100
+            },
+            "activeSeats" : {
+              "type" : "integer",
+              "example" : 99
+            },
+            "exportLimit" : {
+              "type" : "integer",
+              "example" : 1000
+            },
+            "contactName" : {
+              "type" : "string",
+              "example" : "Vito Labate"
+            },
+            "contactTitle" : {
+              "type" : "string",
+              "example" : "North America Marketing and Communications"
+            },
+            "contactPhone" : {
+              "type" : "string",
+              "example" : "(416) 802-1763"
+            },
+            "contactEmail" : {
+              "type" : "string",
+              "example" : "vito.labate@capgemini.com"
+            },
+            "contactDetails" : {
+              "type" : "string",
+              "example" : "3/7 - 25 Users added under the premise that a new agreement is executed within 2-3 weeks."
+            }
+          }
+        } ]
+      },
+      "DownloadJob" : {
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 13245
+          },
+          "userId" : {
+            "type" : "integer",
+            "example" : 145264
+          },
+          "downloadTime" : {
+            "type" : "string",
+            "example" : "2017-07-21T17:32:28Z"
+          },
+          "donwloadIp" : {
+            "type" : "string",
+            "example" : "203.99.198.64"
+          },
+          "plantEmailSm" : {
+            "type" : "string",
+            "example" : "Mike.Chanikornpradit@caltora.net"
+          },
+          "plantEmailMed" : {
+            "type" : "string",
+            "example" : "Mike.Chanis@caltora.net"
+          },
+          "plantEmailLg" : {
+            "type" : "string",
+            "example" : "M.Aakerholt@caltora.net"
+          },
+          "numRecords" : {
+            "type" : "integer",
+            "example" : 555
+          },
+          "fieldsJson" : {
+            "type" : "string",
+            "example" : "[{\"id\": 2, \"displayName\": \"Employee First Name...\"}, {\"id\": 3, \"displayName\": \"Employee Last Name\"}...]"
+          }
+        }
+      },
+      "DownloadJobDetail" : {
+        "properties" : {
+          "downloadJob" : {
+            "$ref" : "#/components/schemas/DownloadJob"
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/UserDetail"
+          },
+          "customer" : {
+            "$ref" : "#/components/schemas/CustomerDetail"
+          }
+        }
+      },
+      "UsageTrack" : {
+        "required" : [ "id", "platformUser", "userId" ],
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 1
+          },
+          "platformUser" : {
+            "type" : "string",
+            "example" : "marylynn.benners@experis.com"
+          },
+          "userId" : {
+            "type" : "integer",
+            "example" : 33231
+          },
+          "eventDate" : {
+            "type" : "string",
+            "example" : "2017-07-21T17:32:28Z"
+          },
+          "updateTime" : {
+            "type" : "string",
+            "example" : "2017-07-21T17:32:28Z"
+          },
+          "clientId" : {
+            "type" : "string",
+            "example" : "172.20.19.178"
+          },
+          "companyName" : {
+            "type" : "string",
+            "example" : "Experis"
+          },
+          "action" : {
+            "type" : "string",
+            "example" : "Export Actions"
+          },
+          "entityType" : {
+            "type" : "string",
+            "example" : "Intel Report"
+          },
+          "detailsJson" : {
+            "type" : "string",
+            "example" : "{\"entityType\": \"Company\", \"entityIds\": [1318, 7880, 3268, 1870, 1263, 5424, 550, 11645, 30443, 3443, 10474]}"
+          },
+          "eventCount" : {
+            "type" : "integer",
+            "example" : 87
+          }
+        }
+      },
+      "UsageTrackResponse" : {
+        "required" : [ "total" ],
+        "properties" : {
+          "total" : {
+            "type" : "integer",
+            "example" : 1999
+          },
+          "data" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UsageTrack"
+            }
+          }
+        }
+      },
+      "UsageTrackRequest" : {
+        "required" : [ "userIds" ],
+        "properties" : {
+          "userId" : {
+            "type" : "array",
+            "example" : [ 1, 2, 3 ],
+            "items" : {
+              "type" : "integer"
+            }
+          },
+          "filter" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/FilterObject"
+            }
+          }
+        }
+      },
+      "FilterObject" : {
+        "properties" : {
+          "fieldName" : {
+            "type" : "string",
+            "enum" : [ "platformUser", "userId", "eventDate", "updateTime", "clientId", "companyName", "action", "entityType" ]
+          },
+          "filterValue" : {
+            "type" : "string"
+          },
+          "operator" : {
+            "type" : "string",
+            "enum" : [ "equal", "like" ]
+          }
+        }
+      }
+    }
+  }
+}
