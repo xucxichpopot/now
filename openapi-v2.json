@@ -11,7 +11,7 @@
   "paths" : {
     "/api/v1/companies/email-domain/{emailDomain}" : {
       "get" : {
-        "tags" : [ "companies" ],
+        "tags" : [ "endpoints" ],
         "description" : "Search company information by domain\n\n**Original service:**\ncatcherEmailService.retrieveCompanyByEmailDomain(senderDomain)\n\n  FROM company WHERE email_domain = #{emailDomain} AND state = 4",
         "operationId" : "findCompanyByEmailDomain",
         "parameters" : [ {
@@ -47,7 +47,7 @@
     },
     "/api/v1/accounts/valid-domain/{domain}" : {
       "get" : {
-        "tags" : [ "accounts" ],
+        "tags" : [ "endpoints" ],
         "description" : "Check the given domain is valid or not\n\n**Original service:** catcherEmailService.selectCountCustomerWithValidDomainsContainsDomain(senderDomain) > 0\n\nFROM dorg.customer\nCheck existence of a domain in customer.valid_domains column      ",
         "operationId" : "checkValidDomain",
         "parameters" : [ {
@@ -80,7 +80,7 @@
     },
     "/api/v1/users/dorg1/{id}" : {
       "get" : {
-        "tags" : [ "users" ],
+        "tags" : [ "endpoints" ],
         "description" : "Find user by dorg1 user id\n\n**Original service**:\n\nFROM dorg.user u WHERE dorg1_id = #{id,jdbcType=INTEGER}\n",
         "operationId" : "findUserByUserDorg1Id",
         "parameters" : [ {
@@ -116,7 +116,7 @@
     },
     "/api/v1/users/{id}" : {
       "get" : {
-        "tags" : [ "users" ],
+        "tags" : [ "endpoints" ],
         "description" : "Find user by id\n\n**Original service:** \n\nFROM dorg.user u WHERE id = #{id}                                                ",
         "operationId" : "findUserById",
         "parameters" : [ {
@@ -152,7 +152,7 @@
     },
     "/api/v1/download-jobs/plant-email/{plantEmail}" : {
       "get" : {
-        "tags" : [ "download jobs" ],
+        "tags" : [ "endpoints" ],
         "description" : "Find Download job by plant email\n\n**Original service:** \n\nFROM dorg.download_job\n\nWHERE plant_email_sm = #{plantEmail,jdbcType=VARCHAR}\n\nOR plant_email_med = #{plantEmail,jdbcType=VARCHAR}\n\nOR plant_email_lg = #{plantEmail,jdbcType=VARCHAR}\n\nORDER by download_time desc\n\nLIMIT 1 \n           ",
         "operationId" : "findDownloadJobByPlantEmail",
         "parameters" : [ {
@@ -188,7 +188,7 @@
     },
     "/api/v1/usage-tracks/user-id/batch" : {
       "post" : {
-        "tags" : [ "usage tracks" ],
+        "tags" : [ "endpoints" ],
         "description" : "Search usage tracks by user ids",
         "operationId" : "findUsageTrackByUserIds",
         "parameters" : [ {
