@@ -3,15 +3,15 @@
   "info" : {
     "title" : "DORG API for Catcher V2",
     "description" : "DORG API for Catcher V2",
-    "version" : "1.0.4"
+    "version" : "1.0.5"
   },
   "servers" : [ {
-    "url" : "https://virtserver.swaggerhub.com/m931/DORG/1.0.0"
+    "url" : "http://localhost/catcherv2"
   } ],
   "paths" : {
     "/api/v1/companies/email-domain/{emailDomain}" : {
       "get" : {
-        "tags" : [ "developers" ],
+        "tags" : [ "companies" ],
         "description" : "Search company information by domain\n\n**Original service:**\ncatcherEmailService.retrieveCompanyByEmailDomain(senderDomain)\n\n  FROM company WHERE email_domain = #{emailDomain} AND state = 4",
         "operationId" : "findCompanyByEmailDomain",
         "parameters" : [ {
@@ -47,7 +47,7 @@
     },
     "/api/v1/accounts/valid-domain/{domain}" : {
       "get" : {
-        "tags" : [ "developers" ],
+        "tags" : [ "accounts" ],
         "description" : "Check the given domain is valid or not\n\n**Original service:** catcherEmailService.selectCountCustomerWithValidDomainsContainsDomain(senderDomain) > 0\n\nFROM dorg.customer\nCheck existence of a domain in customer.valid_domains column      ",
         "operationId" : "checkValidDomain",
         "parameters" : [ {
@@ -80,7 +80,7 @@
     },
     "/api/v1/users/dorg1/{id}" : {
       "get" : {
-        "tags" : [ "developers" ],
+        "tags" : [ "users" ],
         "description" : "Find user by dorg1 user id\n\n**Original service**:\n\nFROM dorg.user u WHERE dorg1_id = #{id,jdbcType=INTEGER}\n",
         "operationId" : "findUserByUserDorg1Id",
         "parameters" : [ {
@@ -116,7 +116,7 @@
     },
     "/api/v1/users/{id}" : {
       "get" : {
-        "tags" : [ "developers" ],
+        "tags" : [ "users" ],
         "description" : "Find user by id\n\n**Original service:** \n\nFROM dorg.user u WHERE id = #{id}                                                ",
         "operationId" : "findUserById",
         "parameters" : [ {
@@ -152,7 +152,7 @@
     },
     "/api/v1/download-jobs/plant-email/{plantEmail}" : {
       "get" : {
-        "tags" : [ "developers" ],
+        "tags" : [ "download jobs" ],
         "description" : "Find Download job by plant email\n\n**Original service:** \n\nFROM dorg.download_job\n\nWHERE plant_email_sm = #{plantEmail,jdbcType=VARCHAR}\n\nOR plant_email_med = #{plantEmail,jdbcType=VARCHAR}\n\nOR plant_email_lg = #{plantEmail,jdbcType=VARCHAR}\n\nORDER by download_time desc\n\nLIMIT 1 \n           ",
         "operationId" : "findDownloadJobByPlantEmail",
         "parameters" : [ {
@@ -188,24 +188,24 @@
     },
     "/api/v1/usage-tracks/user-id/batch" : {
       "post" : {
-        "tags" : [ "developers" ],
+        "tags" : [ "usage tracks" ],
         "description" : "Search usage tracks by user ids",
         "operationId" : "findUsageTrackByUserIds",
         "parameters" : [ {
           "name" : "limit",
           "in" : "query",
-          "description" : "Limit on the number of records to return. If the set of matched results is larger than limit, cap the returned results at size limit. (default - 100)",
+          "description" : "Limit on the number of records to return. If the set of matched results is larger than limit, cap the returned results at size limit.",
           "required" : false,
           "style" : "form",
           "explode" : true,
           "schema" : {
             "type" : "integer",
-            "default" : 100
+            "default" : 10
           }
         }, {
           "name" : "start",
           "in" : "query",
-          "description" : "From the set of matched results, return record numbers start through (start + count) (default - 0)",
+          "description" : "From the set of matched results, return record numbers start through (start + count)",
           "required" : false,
           "style" : "form",
           "explode" : true,
@@ -222,7 +222,7 @@
           "explode" : true,
           "schema" : {
             "type" : "string",
-            "enum" : [ "platformUser", "userId", "eventDate", "updateTime", "clientId", "companyName", "action", "entityType" ]
+            "enum" : [ "clientAccount", "platformUser", "userId", "ipAddress", "action", "entityType" ]
           }
         }, {
           "name" : "sort",
@@ -235,44 +235,23 @@
             "type" : "string",
             "enum" : [ "asc", "desc" ]
           }
-        }, {
-          "name" : "filterBy",
-          "in" : "query",
-          "description" : "Name of property on which to filter",
-          "required" : false,
-          "style" : "form",
-          "explode" : true,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "platformUser", "userId", "eventDate", "updateTime", "clientId", "companyName", "action", "entityType" ]
-          }
-        }, {
-          "name" : "filterValue",
-          "in" : "query",
-          "description" : "The corresponding value to filter",
-          "required" : false,
-          "style" : "form",
-          "explode" : true,
-          "schema" : {
-            "type" : "string"
-          }
         } ],
         "requestBody" : {
-          "description" : "User ids",
+          "description" : "User ids and filter options",
           "content" : {
             "application/json" : {
               "schema" : {
                 "$ref" : "#/components/schemas/UsageTrackRequest"
               },
               "example" : {
-                "userId" : [ 33231, 108625 ],
+                "userIds" : [ 33231, 108625 ],
                 "filter" : [ {
-                  "filterName" : "platformUser",
-                  "filterValue" : "huston",
+                  "fieldName" : "platformUser",
+                  "value" : "huston",
                   "operator" : "like"
                 }, {
-                  "filterName" : "eventDate",
-                  "filterValue" : "2017-07-21",
+                  "fieldName" : "eventDate",
+                  "value" : "2017-07-21",
                   "operator" : "equal"
                 } ]
               }
@@ -292,28 +271,22 @@
                   "total" : 1888,
                   "data" : [ {
                     "id" : 1,
-                    "platformUser" : "jennifer.huston@experis.com",
+                    "clientAccount" : "Experis",
+                    "platformUser" : "marylynn.benners@experis.com",
                     "userId" : 33231,
-                    "eventDate" : "2017-07-21",
-                    "updateTime" : "2017-07-21T17:32:28Z",
-                    "clientId" : "172.20.19.178",
-                    "companyName" : "Experis",
+                    "ipAddress" : "172.20.19.178",
+                    "timestamp" : "2017-07-21T17:32:28Z",
                     "action" : "Export Actions",
-                    "entityType" : "Intel Report",
-                    "detailsJson" : "{\"entityType\": \"Intel\", \"entityIds\": [1318, 7880, 3268, 1870, 1263, 5424, 550, 11645, 30443, 3443, 10474]}",
-                    "eventCount" : 87
+                    "entityType" : "Intel Report"
                   }, {
-                    "id" : 2,
+                    "id" : 10,
+                    "clientAccount" : "Advantage",
                     "platformUser" : "jplanner@advantage-tech.com",
                     "userId" : 108625,
-                    "eventDate" : "2017-07-21",
-                    "updateTime" : "2017-07-21T17:32:28Z",
-                    "clientId" : "50.232.118.139",
-                    "companyName" : "Advantage Technical Systems",
+                    "ipAddress" : "172.20.19.178",
+                    "timestamp" : "2017-07-21T17:32:28Z",
                     "action" : "Export Actions",
-                    "entityType" : "Company",
-                    "detailsJson" : "{\"entityType\": \"Company\", \"entityIds\": [1318, 7880, 3268, 1870, 1263, 5424, 550, 11645, 30443, 3443, 10474]}",
-                    "eventCount" : 13
+                    "entityType" : "Person"
                   } ]
                 }
               }
@@ -535,51 +508,44 @@
         }
       },
       "UsageTrack" : {
-        "required" : [ "id", "platformUser", "userId" ],
         "properties" : {
           "id" : {
             "type" : "integer",
             "example" : 1
           },
+          "clientAccount" : {
+            "type" : "string",
+            "description" : "Name of the client associated with the user",
+            "example" : "Experis"
+          },
           "platformUser" : {
             "type" : "string",
+            "description" : "Username for the user",
             "example" : "marylynn.benners@experis.com"
           },
           "userId" : {
             "type" : "integer",
             "example" : 33231
           },
-          "eventDate" : {
+          "ipAddress" : {
             "type" : "string",
-            "example" : "2017-07-21T17:32:28Z"
-          },
-          "updateTime" : {
-            "type" : "string",
-            "example" : "2017-07-21T17:32:28Z"
-          },
-          "clientId" : {
-            "type" : "string",
+            "description" : "IP address associated with the user activity",
             "example" : "172.20.19.178"
           },
-          "companyName" : {
+          "timestamp" : {
             "type" : "string",
-            "example" : "Experis"
+            "description" : "Date/Time of the activity",
+            "example" : "2017-07-21T17:32:28Z"
           },
           "action" : {
             "type" : "string",
+            "description" : "Type of activity, like “Export actions”)",
             "example" : "Export Actions"
           },
           "entityType" : {
             "type" : "string",
+            "description" : "Data type related to activity (like “Person” or “Corporate History”)",
             "example" : "Intel Report"
-          },
-          "detailsJson" : {
-            "type" : "string",
-            "example" : "{\"entityType\": \"Company\", \"entityIds\": [1318, 7880, 3268, 1870, 1263, 5424, 550, 11645, 30443, 3443, 10474]}"
-          },
-          "eventCount" : {
-            "type" : "integer",
-            "example" : 87
           }
         }
       },
@@ -601,7 +567,7 @@
       "UsageTrackRequest" : {
         "required" : [ "userIds" ],
         "properties" : {
-          "userId" : {
+          "userIds" : {
             "type" : "array",
             "example" : [ 1, 2, 3 ],
             "items" : {
@@ -620,9 +586,9 @@
         "properties" : {
           "fieldName" : {
             "type" : "string",
-            "enum" : [ "platformUser", "userId", "eventDate", "updateTime", "clientId", "companyName", "action", "entityType" ]
+            "enum" : [ "clientAccount", "platformUser", "userId", "ipAddress", "action", "entityType" ]
           },
-          "filterValue" : {
+          "value" : {
             "type" : "string"
           },
           "operator" : {
