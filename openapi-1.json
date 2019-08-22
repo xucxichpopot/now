@@ -1,0 +1,981 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "DORG API for Catcher V2",
+    "description" : "DORG API for Catcher V2",
+    "version" : "1.0.8"
+  },
+  "servers" : [ {
+    "url" : "http://localhost/catcherv2"
+  } ],
+  "security" : [ {
+    "ApiKey" : [ ],
+    "Signature" : [ ],
+    "Nonce" : [ ]
+  } ],
+  "paths" : {
+    "/api/v1/catcher-info" : {
+      "get" : {
+        "tags" : [ "endpoints" ],
+        "description" : "get all Catcher info for importing emails process",
+        "operationId" : "getDorgCatcherInfo",
+        "parameters" : [ {
+          "name" : "senderEmail",
+          "in" : "query",
+          "description" : "value of FROM of mail",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "senderDomain",
+          "in" : "query",
+          "description" : "value of company domain",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "plantEmail",
+          "in" : "query",
+          "description" : "value of TO (or Recipient) of mail",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "senderDetail: detail user and account who sent mail.\nreceiverDetail: detail user and account who requested the export that contained the plant email.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CatcherInfo"
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "No data"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/usage-track-actions" : {
+      "get" : {
+        "tags" : [ "endpoints" ],
+        "description" : "Get all usage track type in table 'dorg.usage_track_type_lu' to support filtering usage track by dropdown",
+        "operationId" : "getUsageTrackActions",
+        "responses" : {
+          "200" : {
+            "description" : "all usage track actions found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UsageTrackAction"
+                  }
+                },
+                "example" : [ {
+                  "id" : 1,
+                  "displayName" : "Logins"
+                }, {
+                  "id" : 2,
+                  "displayName" : "Sessions"
+                }, {
+                  "id" : 3,
+                  "displayName" : "Download Actions"
+                } ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/usage-track-entity-types" : {
+      "get" : {
+        "tags" : [ "endpoints" ],
+        "description" : "Get all entity types in table 'dorg.entity_type_lu' to support filtering usage track by dropdown",
+        "operationId" : "getUsageTrackEntityType",
+        "responses" : {
+          "200" : {
+            "description" : "all usage track entity types found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UsageTrackEntityType"
+                  }
+                },
+                "example" : [ {
+                  "id" : 1,
+                  "displayName" : "Company"
+                }, {
+                  "id" : 2,
+                  "displayName" : "Person"
+                }, {
+                  "id" : 3,
+                  "displayName" : "Intel"
+                } ]
+              }
+            }
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/usage-tracks" : {
+      "post" : {
+        "tags" : [ "endpoints" ],
+        "description" : "Find usage tracks by given search criteria",
+        "operationId" : "getUsageTracksPaged",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Limit on the number of records to return. If the set of matched results is larger than limit, cap the returned results at size limit.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "default" : 10
+          }
+        }, {
+          "name" : "start",
+          "in" : "query",
+          "description" : "From the set of matched results, return record numbers start through (start + limit)",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "default" : 0
+          }
+        } ],
+        "requestBody" : {
+          "description" : "filters, sorts",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UsageTrackSearchCriteria"
+              },
+              "example" : {
+                "filters" : [ {
+                  "fieldName" : "customer",
+                  "value" : "discoverorg",
+                  "valueDataType" : "string",
+                  "operator" : "like"
+                }, {
+                  "fieldName" : "userIds",
+                  "value" : "[103249, 127605]",
+                  "valueDataType" : "array",
+                  "operator" : "in"
+                } ],
+                "dateRangeFilters" : [ {
+                  "fieldName" : "timestamp",
+                  "from" : "2019-07-17T17:32:28Z",
+                  "to" : "2019-07-18T17:32:28Z"
+                } ],
+                "sorts" : [ {
+                  "fieldName" : "user",
+                  "order" : "asc"
+                } ]
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Usage tracks data found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsageTrackResponse"
+                },
+                "example" : {
+                  "total" : 1888,
+                  "data" : [ {
+                    "id" : 117970686,
+                    "timestamp" : "2017-07-21T17:32:28Z",
+                    "customer" : {
+                      "id" : 4632,
+                      "name" : "DiscoverOrg"
+                    },
+                    "detailsJson" : "{\"loginType\": \"FORM\"}",
+                    "clientIp" : "172.20.19.178",
+                    "user" : {
+                      "id" : 103249,
+                      "username" : "andrew.fortier@discoverorg.com"
+                    },
+                    "usageTrackAction" : {
+                      "id" : 1,
+                      "displayName" : "Logins"
+                    },
+                    "usageTrackEntity" : {
+                      "id" : "1,",
+                      "displayName" : "Company"
+                    }
+                  }, {
+                    "id" : 117970687,
+                    "timestamp" : "2019-07-21T13:57:13Z",
+                    "customer" : {
+                      "id" : 11200,
+                      "name" : "DiscoverOrgQA - All of TEDD"
+                    },
+                    "detailsJson" : "{\"loginType\": \"FORM\"}",
+                    "clientIp" : "10.255.8.9",
+                    "user" : {
+                      "id" : 127605,
+                      "username" : "qatestTEDDManager"
+                    },
+                    "usageTrackAction" : {
+                      "id" : 1,
+                      "displayName" : "Logins"
+                    },
+                    "usageTrackEntity" : {
+                      "id" : "3,",
+                      "displayName" : "Intel Report"
+                    }
+                  } ]
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "Usage track data not found"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/usage-tracks/ids" : {
+      "post" : {
+        "tags" : [ "endpoints" ],
+        "description" : "Find usage tracks by given ids",
+        "operationId" : "getUsageTrackByIds",
+        "requestBody" : {
+          "description" : "usage track ids",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "integer"
+                }
+              },
+              "example" : [ 117970686, 117970687 ]
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Usage tracks data found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsageTrackResponse"
+                },
+                "example" : {
+                  "total" : 1888,
+                  "data" : [ {
+                    "id" : 117970686,
+                    "timestamp" : "2017-07-21T17:32:28Z",
+                    "customer" : {
+                      "id" : 4632,
+                      "name" : "DiscoverOrg"
+                    },
+                    "detailsJson" : "{\"loginType\": \"FORM\"}",
+                    "clientIp" : "172.20.19.178",
+                    "user" : {
+                      "id" : 103249,
+                      "username" : "andrew.fortier@discoverorg.com"
+                    },
+                    "usageTrackAction" : {
+                      "id" : 1,
+                      "displayName" : "Logins"
+                    },
+                    "usageTrackEntity" : {
+                      "id" : "1,",
+                      "displayName" : "Company"
+                    }
+                  }, {
+                    "id" : 117970687,
+                    "timestamp" : "2019-07-21T13:57:13Z",
+                    "customer" : {
+                      "id" : 11200,
+                      "name" : "DiscoverOrgQA - All of TEDD"
+                    },
+                    "detailsJson" : "{\"loginType\": \"FORM\"}",
+                    "clientIp" : "10.255.8.9",
+                    "user" : {
+                      "id" : 127605,
+                      "username" : "qatestTEDDManager"
+                    },
+                    "usageTrackAction" : {
+                      "id" : 1,
+                      "displayName" : "Logins"
+                    },
+                    "usageTrackEntity" : {
+                      "id" : "3,",
+                      "displayName" : "Intel Report"
+                    }
+                  } ]
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "Usage track data not found"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/download-jobs" : {
+      "post" : {
+        "tags" : [ "endpoints" ],
+        "description" : "Find download jobs by given search criteria",
+        "operationId" : "getDownloadJobsPaged",
+        "parameters" : [ {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "Limit on the number of records to return. If the set of matched results is larger than limit, cap the returned results at size limit.",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "default" : 10
+          }
+        }, {
+          "name" : "start",
+          "in" : "query",
+          "description" : "From the set of matched results, return record numbers start through (start + limit)",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "default" : 0
+          }
+        } ],
+        "requestBody" : {
+          "description" : "filters, sorts",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ExportHistorySearchCriteria"
+              },
+              "example" : {
+                "filters" : [ {
+                  "fieldName" : "plantEmail",
+                  "value" : "plantEmail@dioicia.com",
+                  "valueDataType" : "string",
+                  "operator" : "like"
+                } ],
+                "dateRangeFilters" : [ {
+                  "fieldName" : "downloadTime",
+                  "from" : "2019-07-17T17:32:28Z",
+                  "to" : "2019-07-18T17:32:28Z"
+                } ],
+                "sorts" : [ {
+                  "fieldName" : "downloadTime",
+                  "order" : "desc"
+                } ]
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Download job data found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ExportHistoryResponse"
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "Download job data not found"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    },
+    "/api/v1/download-jobs/ids" : {
+      "post" : {
+        "tags" : [ "endpoints" ],
+        "description" : "Find download jobs by given ids",
+        "operationId" : "getDownloadJobsByIds",
+        "requestBody" : {
+          "description" : "ids of export histories",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "integer"
+                }
+              },
+              "example" : [ 13245 ]
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Download job data found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ExportHistoryResponse"
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "Download job data not found"
+          },
+          "400" : {
+            "description" : "Bad input parameter"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Company" : {
+        "required" : [ "id", "name" ],
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 4632
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "1800flowers"
+          },
+          "webDomain" : {
+            "type" : "string",
+            "example" : "www.1800flowers.com"
+          }
+        }
+      },
+      "Valid" : {
+        "required" : [ "valid" ],
+        "properties" : {
+          "valid" : {
+            "type" : "boolean",
+            "example" : true
+          }
+        }
+      },
+      "User" : {
+        "required" : [ "customerId", "id", "userName" ],
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 13245
+          },
+          "customerId" : {
+            "type" : "integer",
+            "example" : 4632
+          },
+          "userName" : {
+            "type" : "string",
+            "example" : "user1@gmail.com"
+          },
+          "firstName" : {
+            "type" : "string",
+            "example" : "John"
+          },
+          "lastName" : {
+            "type" : "string",
+            "example" : "Wick"
+          },
+          "fullName" : {
+            "type" : "string",
+            "example" : "John Wick"
+          }
+        }
+      },
+      "Customer" : {
+        "required" : [ "activeTo", "id", "name" ],
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 4632
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "arista"
+          },
+          "validDomains" : {
+            "type" : "string",
+            "example" : "aristanetworks.com arista.com"
+          },
+          "activeTo" : {
+            "type" : "string",
+            "example" : "2017-07-21T17:32:28Z"
+          }
+        }
+      },
+      "UserDetail" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/User"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "email" : {
+              "type" : "string",
+              "example" : "user1@gmail.com"
+            },
+            "status" : {
+              "type" : "string",
+              "example" : "active"
+            },
+            "activeFrom" : {
+              "type" : "string",
+              "example" : "2017-07-21T17:32:28Z"
+            },
+            "activeTo" : {
+              "type" : "string",
+              "example" : "2017-07-21T17:32:28Z"
+            },
+            "exportLimit" : {
+              "type" : "integer",
+              "example" : 1000
+            }
+          }
+        } ]
+      },
+      "CustomerDetail" : {
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Customer"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "status" : {
+              "type" : "string",
+              "example" : "active"
+            },
+            "activeFrom" : {
+              "type" : "string",
+              "example" : "2017-07-21T17:32:28Z"
+            },
+            "maxSeats" : {
+              "type" : "integer",
+              "example" : 100
+            },
+            "activeSeats" : {
+              "type" : "integer",
+              "example" : 99
+            },
+            "exportLimit" : {
+              "type" : "integer",
+              "example" : 1000
+            },
+            "contactName" : {
+              "type" : "string",
+              "example" : "Vito Labate"
+            },
+            "contactTitle" : {
+              "type" : "string",
+              "example" : "North America Marketing and Communications"
+            },
+            "contactPhone" : {
+              "type" : "string",
+              "example" : "(416) 802-1763"
+            },
+            "contactEmail" : {
+              "type" : "string",
+              "example" : "vito.labate@capgemini.com"
+            },
+            "contactDetails" : {
+              "type" : "string",
+              "example" : "3/7 - 25 Users added under the premise that a new agreement is executed within 2-3 weeks."
+            }
+          }
+        } ]
+      },
+      "DownloadJob" : {
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 13245
+          },
+          "downloadTime" : {
+            "type" : "string",
+            "example" : "2017-07-21T17:32:28Z"
+          },
+          "downloadIP" : {
+            "type" : "string",
+            "example" : "203.99.198.64"
+          },
+          "plantEmailSm" : {
+            "type" : "string",
+            "example" : "Mike.Chanikornpradit@caltora.net"
+          },
+          "plantEmailMed" : {
+            "type" : "string",
+            "example" : "Mike.Chanis@caltora.net"
+          },
+          "plantEmailLg" : {
+            "type" : "string",
+            "example" : "M.Aakerholt@caltora.net"
+          },
+          "numRecords" : {
+            "type" : "integer",
+            "example" : 555
+          },
+          "fieldsJson" : {
+            "type" : "string",
+            "example" : "[{\"id\": 2, \"displayName\": \"Employee First Name...\"}, {\"id\": 3, \"displayName\": \"Employee Last Name\"}...]"
+          }
+        }
+      },
+      "DownloadJobDetail" : {
+        "properties" : {
+          "downloadJob" : {
+            "$ref" : "#/components/schemas/DownloadJob"
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/UserDetail"
+          },
+          "customer" : {
+            "$ref" : "#/components/schemas/CustomerDetail"
+          }
+        }
+      },
+      "UsageTrack" : {
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 1
+          },
+          "timestamp" : {
+            "type" : "string",
+            "description" : "Date/Time of the activity",
+            "example" : "2019-07-21T12:59:53Z"
+          },
+          "customer" : {
+            "$ref" : "#/components/schemas/UsageTrackCustomer"
+          },
+          "detailsJson" : {
+            "type" : "string",
+            "example" : "{\"entityType\": \"Company\", \"entityIds\": [1318, 7880, 3268, 1870, 1263, 5424, 550, 11645, 30443, 3443, 10474]}"
+          },
+          "clientIp" : {
+            "type" : "string",
+            "description" : "IP address associated with the user activity",
+            "example" : "10.255.8.9"
+          },
+          "user" : {
+            "$ref" : "#/components/schemas/UsageTrackUser"
+          },
+          "usageTrackAction" : {
+            "$ref" : "#/components/schemas/UsageTrackAction"
+          },
+          "usageTrackEntity" : {
+            "$ref" : "#/components/schemas/UsageTrackEntityType"
+          }
+        }
+      },
+      "UsageTrackResponse" : {
+        "required" : [ "totalRows" ],
+        "properties" : {
+          "totalRows" : {
+            "type" : "integer",
+            "example" : 1999
+          },
+          "data" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UsageTrack"
+            }
+          }
+        }
+      },
+      "UsageTrackFilter" : {
+        "properties" : {
+          "fieldName" : {
+            "type" : "string",
+            "example" : "userIds",
+            "enum" : [ "customer", "platformUser", "user", "clientIp", "usageTrackAction", "usageTrackEntity", "userIds" ]
+          },
+          "value" : {
+            "type" : "string",
+            "example" : "[1,2,3]"
+          },
+          "valueDataType" : {
+            "type" : "string",
+            "example" : "array",
+            "enum" : [ "string", "number", "array" ]
+          },
+          "operator" : {
+            "type" : "string",
+            "description" : "in operator means that a specific fieldName in an array of value",
+            "example" : "in",
+            "enum" : [ "like", "equal", "in" ]
+          }
+        }
+      },
+      "UsageTrackDateRangeFilter" : {
+        "properties" : {
+          "fieldName" : {
+            "type" : "string",
+            "example" : "timestamp",
+            "enum" : [ "timestamp" ]
+          },
+          "from" : {
+            "type" : "string",
+            "example" : "2017-07-21T17:32:28Z"
+          },
+          "to" : {
+            "type" : "string"
+          }
+        }
+      },
+      "UsageTrackSort" : {
+        "properties" : {
+          "fieldName" : {
+            "type" : "string",
+            "default" : "timestamp",
+            "enum" : [ "customer", "user", "clientIp", "timestamp" ]
+          },
+          "order" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }
+      },
+      "UsageTrackSearchCriteria" : {
+        "properties" : {
+          "filters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UsageTrackFilter"
+            }
+          },
+          "dateRangeFilters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UsageTrackDateRangeFilter"
+            }
+          },
+          "sorts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UsageTrackSort"
+            }
+          }
+        }
+      },
+      "ExportHistoryFilter" : {
+        "properties" : {
+          "fieldName" : {
+            "type" : "string",
+            "enum" : [ "plantEmail", "username", "userId", "clientIp", "accountName" ]
+          },
+          "value" : {
+            "type" : "string"
+          },
+          "valueDataType" : {
+            "type" : "string",
+            "enum" : [ "string", "number" ]
+          },
+          "operator" : {
+            "type" : "string",
+            "enum" : [ "like", "equal" ]
+          }
+        }
+      },
+      "ExportHistoryDateRangeFilter" : {
+        "properties" : {
+          "fieldName" : {
+            "type" : "string",
+            "example" : "downloadTime",
+            "enum" : [ "downloadTime" ]
+          },
+          "from" : {
+            "type" : "string",
+            "example" : "2017-07-21T17:32:28Z"
+          },
+          "to" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ExportHistorySort" : {
+        "properties" : {
+          "fieldName" : {
+            "type" : "string",
+            "default" : "downloadTime",
+            "enum" : [ "userId", "downloadTime", "clientIp", "accountName" ]
+          },
+          "order" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }
+      },
+      "ExportHistorySearchCriteria" : {
+        "properties" : {
+          "filters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ExportHistoryFilter"
+            }
+          },
+          "dateRangeFilters" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ExportHistoryDateRangeFilter"
+            }
+          },
+          "sorts" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ExportHistorySort"
+            }
+          }
+        }
+      },
+      "UsageTrackAction" : {
+        "properties" : {
+          "id" : {
+            "type" : "number",
+            "example" : 1
+          },
+          "displayName" : {
+            "type" : "string",
+            "example" : "Logins"
+          }
+        }
+      },
+      "UsageTrackEntityType" : {
+        "properties" : {
+          "id" : {
+            "type" : "number",
+            "example" : 1
+          },
+          "displayName" : {
+            "type" : "string",
+            "example" : "Company"
+          }
+        }
+      },
+      "UsageTrackCustomer" : {
+        "properties" : {
+          "id" : {
+            "type" : "number",
+            "example" : 1
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "DiscoverOrg"
+          }
+        }
+      },
+      "UsageTrackUser" : {
+        "properties" : {
+          "id" : {
+            "type" : "number",
+            "example" : 1
+          },
+          "username" : {
+            "type" : "string",
+            "example" : "andrew.fortier@discoverorg.com"
+          }
+        }
+      },
+      "CatcherInfo" : {
+        "properties" : {
+          "companyName" : {
+            "type" : "string"
+          },
+          "companyWebDomain" : {
+            "type" : "string"
+          },
+          "isSentFromValidDomain" : {
+            "type" : "string"
+          },
+          "plantEmail" : {
+            "type" : "string"
+          },
+          "senderDetail" : {
+            "$ref" : "#/components/schemas/DownloadJobDetail"
+          },
+          "receiverDetail" : {
+            "$ref" : "#/components/schemas/DownloadJobDetail"
+          }
+        }
+      },
+      "ExportHistoryResponse" : {
+        "required" : [ "totalRows" ],
+        "properties" : {
+          "totalRows" : {
+            "type" : "integer",
+            "example" : 1999
+          },
+          "data" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/DownloadJobDetail"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "ApiKey" : {
+        "type" : "apiKey",
+        "description" : "provided key getting from configuration",
+        "name" : "C-API-KEY",
+        "in" : "header"
+      },
+      "Signature" : {
+        "type" : "apiKey",
+        "description" : "Signature is an HMAC-SHA256 encoded message containing nonce, customer id and API key. I implemented a method to generate this signature (securityService.hmacSha256(...))",
+        "name" : "C-SIGNATURE",
+        "in" : "header"
+      },
+      "Nonce" : {
+        "type" : "apiKey",
+        "description" : "Nonce is a regular integer number used for protecting us against replay attacks. Pass the current timestamp. Example: new Date().time.toString()",
+        "name" : "C-NONCE",
+        "in" : "header"
+      }
+    }
+  }
+}
