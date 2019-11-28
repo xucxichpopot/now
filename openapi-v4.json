@@ -1,0 +1,289 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "DOZI to DO Data Sync",
+    "description" : "This is a simple API",
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "https://virtserver.swaggerhub.com/vuhoangminhcntt/DAPI/1.0.0",
+    "description" : "SwaggerHub API Auto Mocking"
+  }, {
+    "url" : "http://localhost/dapi"
+  } ],
+  "tags" : [ {
+    "name" : "fundingRound",
+    "description" : "Company funding rounds"
+  } ],
+  "paths" : {
+    "/api/rest/v1/funding-rounds/companies/{companyId}" : {
+      "put" : {
+        "tags" : [ "fundingRound" ],
+        "summary" : "Update company funding rounds",
+        "description" : "Delete all exsting funding rounds and then insert new records sent through the endpoint. Investor with id=0 or null will be inserted new to dorg.investor table",
+        "operationId" : "updateCompanyFundingRounds",
+        "parameters" : [ {
+          "name" : "companyId",
+          "in" : "path",
+          "description" : "Company Id associates with funding rounds",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "List funding round to update",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/FundingRound"
+                }
+              },
+              "example" : [ {
+                "fundingDate" : "2019-07-17T17:32:28Z",
+                "amount" : 9999,
+                "fundingTypeId" : 1,
+                "investors" : [ {
+                  "id" : 1,
+                  "fullName" : "1010 Holdings"
+                }, {
+                  "id" : 2,
+                  "fullName" : "180 Degree Capital"
+                } ]
+              }, {
+                "fundingDate" : "2019-08-17T17:32:28Z",
+                "amount" : 1000,
+                "fundingTypeId" : 2,
+                "investors" : [ {
+                  "id" : 3,
+                  "fullName" : "Blue Lagoon Capital"
+                }, {
+                  "id" : 0,
+                  "fullName" : "New Investor"
+                } ]
+              } ]
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "update successfully"
+          },
+          "400" : {
+            "description" : "invalid input, object invalid"
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "fundingRound" ],
+        "summary" : "Add new company funding rounds",
+        "description" : "Add a new funding round for a customer. We won’t do a duplicate check. Investor with id=0 or null will be inserted new to dorg.investor table",
+        "operationId" : "createCompanyFundingRounds",
+        "parameters" : [ {
+          "name" : "companyId",
+          "in" : "path",
+          "description" : "Company Id associates with funding rounds",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "List funding round to update",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/FundingRound"
+                }
+              },
+              "example" : [ {
+                "fundingDate" : "2019-07-17T17:32:28Z",
+                "amount" : 9999,
+                "fundingTypeId" : 1,
+                "investors" : [ {
+                  "id" : 1,
+                  "fullName" : "1010 Holdings"
+                }, {
+                  "id" : 2,
+                  "fullName" : "180 Degree Capital"
+                } ]
+              }, {
+                "fundingDate" : "2019-08-17T17:32:28Z",
+                "amount" : 1000,
+                "fundingTypeId" : 2,
+                "investors" : [ {
+                  "id" : 3,
+                  "fullName" : "Blue Lagoon Capital"
+                }, {
+                  "id" : 0,
+                  "fullName" : "New Investor"
+                } ]
+              } ]
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "create successfully"
+          },
+          "400" : {
+            "description" : "invalid input, object invalid"
+          }
+        }
+      }
+    },
+    "/api/rest/v1/investors" : {
+      "get" : {
+        "tags" : [ "fundingRound" ],
+        "operationId" : "getAllInvestors",
+        "responses" : {
+          "200" : {
+            "description" : "Get all investors in table dorg.investors",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/Investor"
+                  }
+                },
+                "example" : [ {
+                  "id" : 3,
+                  "fullName" : "Goldman Sachs"
+                }, {
+                  "id" : 5,
+                  "displayName" : "Intel Capital"
+                }, {
+                  "id" : 7,
+                  "displayName" : "Sofinnova Ventures"
+                } ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/rest/v1/funding-types" : {
+      "get" : {
+        "tags" : [ "fundingRound" ],
+        "operationId" : "getAllCompanyFundingTypes",
+        "responses" : {
+          "200" : {
+            "description" : "All company funding types defined",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/FundingType"
+                  }
+                },
+                "example" : [ {
+                  "id" : -1,
+                  "displayName" : "None"
+                }, {
+                  "id" : 0,
+                  "displayName" : "Unspecified"
+                }, {
+                  "id" : 1,
+                  "displayName" : "Series A"
+                }, {
+                  "id" : 2,
+                  "displayName" : "Series B"
+                }, {
+                  "id" : 3,
+                  "displayName" : "Series C"
+                }, {
+                  "id" : 4,
+                  "displayName" : "Series D"
+                }, {
+                  "id" : 5,
+                  "displayName" : "Other Venture Round"
+                }, {
+                  "id" : 6,
+                  "displayName" : "Share Placement"
+                }, {
+                  "id" : 5,
+                  "displayName" : "Stock Issuance"
+                }, {
+                  "id" : 7,
+                  "displayName" : "Private Equity"
+                } ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "FundingRound" : {
+        "required" : [ "amount", "fundingDate", "fundingTypeId", "investors" ],
+        "type" : "object",
+        "properties" : {
+          "fundingDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2019-07-17T17:32:28Z"
+          },
+          "amount" : {
+            "type" : "number",
+            "example" : 99999
+          },
+          "fundingTypeId" : {
+            "type" : "integer",
+            "example" : 1
+          },
+          "investors" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Investor"
+            }
+          }
+        }
+      },
+      "Investor" : {
+        "required" : [ "fullName" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 1
+          },
+          "fullName" : {
+            "type" : "string",
+            "example" : "Angel Investor"
+          }
+        },
+        "description" : "Investor with id=0 or null will be inserted new to dorg.investor table"
+      },
+      "FundingType" : {
+        "required" : [ "displayName", "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "example" : 1
+          },
+          "displayName" : {
+            "type" : "string",
+            "example" : "Series A"
+          }
+        }
+      }
+    }
+  }
+}
