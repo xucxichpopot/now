@@ -1,0 +1,228 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "DOZI to DO Data Sync",
+    "description" : "This is a simple API",
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version" : "1.1.1"
+  },
+  "servers" : [ {
+    "url" : "https://virtserver.swaggerhub.com/vuhoangminhcntt/DAPI/1.0.0",
+    "description" : "SwaggerHub API Auto Mocking"
+  }, {
+    "url" : "http://localhost/dapi"
+  } ],
+  "tags" : [ {
+    "name" : "fundingRound",
+    "description" : "Company funding rounds"
+  } ],
+  "paths" : {
+    "/api/rest/v1/companies/{companyId}/funding-rounds" : {
+      "put" : {
+        "tags" : [ "fundingRound" ],
+        "summary" : "Update company funding rounds",
+        "description" : "Delete all exsting funding rounds and then insert new records sent through the endpoint.",
+        "operationId" : "updateCompanyFundingRounds",
+        "parameters" : [ {
+          "name" : "companyId",
+          "in" : "path",
+          "description" : "Company Id associates with funding rounds",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "List funding round to update",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Funding"
+                }
+              },
+              "example" : [ {
+                "fundingDate" : "2019-07-17T17:32:28Z",
+                "amount" : 9999,
+                "fundingRound" : "Series B",
+                "investors" : [ "1010 Holdings", "180 Degree Capital" ]
+              }, {
+                "fundingDate" : "2019-08-17T17:32:28Z",
+                "amount" : 1000,
+                "fundingRound" : "Series C",
+                "investors" : [ "Blue Lagoon Capital", "New Investor" ]
+              } ]
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Updated"
+          },
+          "400" : {
+            "description" : "Invalid input",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIErrorResponse"
+                },
+                "example" : {
+                  "error" : "invalidInput",
+                  "message" : "Invalid fields: [fundingDate, amount, fundingRound, investors]"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIErrorResponse"
+                },
+                "example" : {
+                  "error" : "companyNotFound",
+                  "message" : "Company id is not found: 1245"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "fundingRound" ],
+        "summary" : "Add new company funding rounds",
+        "description" : "Add a new funding round for a customer. We won’t do a duplicate check.",
+        "operationId" : "createCompanyFundingRounds",
+        "parameters" : [ {
+          "name" : "companyId",
+          "in" : "path",
+          "description" : "Company Id associates with funding rounds",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "List funding round to update",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/Funding"
+                }
+              },
+              "example" : [ {
+                "fundingDate" : "2019-07-17T17:32:28Z",
+                "amount" : 9999,
+                "fundingRound" : "Series B",
+                "investors" : [ "1010 Holdings", "180 Degree Capital" ]
+              }, {
+                "fundingDate" : "2019-08-17T17:32:28Z",
+                "amount" : 1000,
+                "fundingRound" : "Series C",
+                "investors" : [ "Blue Lagoon Capital", "New Investor" ]
+              } ]
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Creatd"
+          },
+          "400" : {
+            "description" : "Invalid input",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIErrorResponse"
+                },
+                "example" : {
+                  "error" : "invalidInput",
+                  "messsage" : "Invalid fields: fundingDate, fundingRound, investors"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIErrorResponse"
+                },
+                "examples" : {
+                  "companyNotFound" : {
+                    "value" : {
+                      "error" : "companyNotFound",
+                      "message" : "Company id is not found: 1245"
+                    }
+                  },
+                  "fundingRoundDuplicated" : {
+                    "value" : {
+                      "error" : "fundingDuplicated",
+                      "message" : "Duplicated fields: fundingDate, amount, fundingRound, investors"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Funding" : {
+        "required" : [ "fundingDate", "fundingRound", "investors" ],
+        "type" : "object",
+        "properties" : {
+          "fundingDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2019-07-17T17:32:28Z"
+          },
+          "amount" : {
+            "type" : "number",
+            "example" : 99999
+          },
+          "fundingRound" : {
+            "type" : "string",
+            "default" : "Unspecified",
+            "enum" : [ "Grant", "Series G", "Series H", "Series E", "Series F", "Unspecified", "Series C", "Series D", "Series A", "Series B", "Private Equity", "Debt", "Share Placement", "Angel/Seed", "Stock Issuance/Offering", "Other Financing Round", "Corporate Investment" ]
+          },
+          "investors" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "example" : "[\"Intel Capital\",\"West Coast Capital\"]"
+            }
+          }
+        }
+      },
+      "APIErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "string",
+            "example" : "companyNotFound"
+          },
+          "message" : {
+            "type" : "string",
+            "example" : "Invalid funding round input"
+          }
+        }
+      }
+    }
+  }
+}
