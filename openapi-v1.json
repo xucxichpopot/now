@@ -1,0 +1,184 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "title" : "DOZI to DO Data Sync",
+    "description" : "This is a simple API",
+    "license" : {
+      "name" : "Apache 2.0",
+      "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version" : "1.1.2"
+  },
+  "servers" : [ {
+    "url" : "https://virtserver.swaggerhub.com/vuhoangminhcntt/DAPI/1.0.0",
+    "description" : "SwaggerHub API Auto Mocking"
+  }, {
+    "url" : "http://localhost/dapi"
+  } ],
+  "tags" : [ {
+    "name" : "person"
+  } ],
+  "paths" : {
+    "/api/rest/v2/persons/{id}" : {
+      "put" : {
+        "tags" : [ "person" ],
+        "summary" : "Update a person",
+        "description" : "Update person and only make specifying just the fields that need to be updated",
+        "operationId" : "updatePerson",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Person id to update",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Person data",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Person"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Updated"
+          },
+          "400" : {
+            "description" : "Invalid input",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIErrorResponse"
+                },
+                "example" : {
+                  "error" : "invalidInput",
+                  "messsage" : "Invalid fields: [fullName, firstName...]"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Server error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/APIErrorResponse"
+                },
+                "examples" : {
+                  "personNotFound" : {
+                    "value" : {
+                      "error" : "personNotFound",
+                      "message" : "Person id is not found: 123"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Person" : {
+        "type" : "object",
+        "properties" : {
+          "fullName" : {
+            "type" : "string",
+            "example" : "Jefferson Gagui"
+          },
+          "firstName" : {
+            "type" : "string",
+            "example" : "Jefferson"
+          },
+          "surName" : {
+            "type" : "string",
+            "example" : "Gagui"
+          },
+          "title" : {
+            "type" : "string",
+            "example" : "Account Executive"
+          },
+          "personSeniorityId" : {
+            "type" : "integer",
+            "example" : 44
+          },
+          "jobFunctionDepartments" : {
+            "type" : "array",
+            "example" : [ {
+              "departmentId" : 2,
+              "jobFunctionIds" : [ 222, 223 ]
+            }, {
+              "departmentId" : 3,
+              "jobFunctionIds" : [ 224, 225 ]
+            } ],
+            "items" : {
+              "$ref" : "#/components/schemas/JobFunction"
+            }
+          },
+          "email" : {
+            "type" : "string",
+            "description" : "The email address should be in a valid email format",
+            "example" : "jefferson.gagui@revelsystems.com"
+          },
+          "personalEmail" : {
+            "type" : "string",
+            "example" : "jefferson.gagui@gmail.com"
+          },
+          "officeTelNumber" : {
+            "type" : "string",
+            "description" : "The first character of the phone number must be a '+' or a '('. You have invalid characters in your phone number or it's formatted incorrectly. The accepted characters are 0-9 ( ) + -",
+            "example" : "(781) 937-2190"
+          },
+          "mobileTelNumber" : {
+            "type" : "string",
+            "description" : "The first character of the phone number must be a '+' or a '('. You have invalid characters in your phone number or it's formatted incorrectly. The accepted characters are 0-9 ( ) + -",
+            "example" : "(602) 321-9357"
+          },
+          "linkedInUrl" : {
+            "type" : "string",
+            "example" : "https://www.linkedin.com/in/jefferson-gagui-803a0845"
+          }
+        }
+      },
+      "JobFunction" : {
+        "required" : [ "departmentId", "jobFunctionIds" ],
+        "type" : "object",
+        "properties" : {
+          "departmentId" : {
+            "type" : "integer",
+            "example" : 2
+          },
+          "jobFunctionIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer"
+            }
+          }
+        }
+      },
+      "APIErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "error" : {
+            "type" : "string",
+            "example" : "companyNotFound"
+          },
+          "message" : {
+            "type" : "string",
+            "example" : "Invalid funding round input"
+          }
+        }
+      }
+    }
+  }
+}
